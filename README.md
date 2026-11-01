@@ -2,28 +2,30 @@
 
 # China Textbook New
 
-**中小学最新版电子教材 · 2022 年版课程标准修订版**
+**一至九年级最新版教材 PDF · 2022 课标修订版**
 
 [![教材](https://img.shields.io/badge/%E6%95%99%E6%9D%90-147_%E6%9C%AC-2f4f4f)](#快速找书)
 [![2022 课标修订版](https://img.shields.io/badge/2022_%E8%AF%BE%E6%A0%87%E4%BF%AE%E8%AE%A2%E7%89%88-115_%E6%9C%AC-c9a227)](#快速找书)
 [![更新](https://img.shields.io/badge/%E6%9B%B4%E6%96%B0-2026--11--01-555555)](#更新)
 [![配套网站 kebiao.org](https://img.shields.io/badge/%E9%85%8D%E5%A5%97%E7%BD%91%E7%AB%99-kebiao.org-1f2937)](https://www.kebiao.org)
 
-[快速找书](#快速找书) · [配合 kebiao.org 备课](#配合-kebiaoorg-备课) · [怎么下载](#怎么下载) · [和 ChinaTextbook 的区别](#和-chinatextbook-的区别) · [English](#english)
+[快速找书](#快速找书) · [配合 kebiao.org 备课](#配合-kebiaoorg-备课) · [怎么下载](#怎么下载) · [和 ChinaTextbook 有什么不同](#和-chinatextbook-有什么不同) · [English](#english)
 
 </div>
 
-小学一年级到初中九年级，各学科**最新修订版**教材的 PDF。全部来自[国家中小学智慧教育平台](https://basic.smartedu.cn/tchMaterial)，每本都和平台记录核对过，并标明是不是 2022 年版课程标准修订后的新版。
+从 2024 年秋天开始，义务教育各科陆续换上了根据 2022 年版课程标准修订的新教材。可网上好找的 PDF 大多还是旧印次，想要新版，只能去[国家中小学智慧教育平台](https://basic.smartedu.cn/tchMaterial)一本本找。
 
-截至 2026-11-01，共 **147** 本、5.4 GB：
+我在做 [kebiao.org](https://www.kebiao.org)，一个帮老师查课标、对教材的网站，本来就得把这套新教材整理一遍。整理好了，干脆放在这里，谁要都能直接拿。
 
-- ✅ **115** 本是「根据 2022 年版课程标准修订」的新版。
-- ⏳ **28** 本平台还没有发布修订版，主要是四至六年级、九年级的下册。先放现行版，平台一上线新版就替换。
-- ⏳ **4** 本是初中地理配套图册。平台不提供图册，沿用现有版本。
+现在有 **147** 本，一共 5.4 GB，2026-11-01 更新：
+
+- ✅ **115** 本是 2022 课标修订版，直接取自国家平台，和平台上的文件一模一样。
+- ⏳ **28** 本平台还没出修订版，大多是四到六年级和九年级的下册。先放现行版，新版一出来就换。
+- ⏳ 还有 **4** 本初中地理图册，平台上没有，用的是现有版本。
 
 ## 快速找书
 
-点册名下载 PDF。带 ⏳ 的是现行版（平台还没发布修订版），其余都是 2022 课标修订版。点学科名可以看这一科每本书的页数、大小，以及到 kebiao.org 和国家平台的链接。
+点册名就能下载。带 ⏳ 的是现行版，其余都是修订版。点学科名，能看到这一科每本书的页数、大小，还有去 kebiao.org 和国家平台的链接。
 
 **小学**
 
@@ -59,25 +61,25 @@
 
 ## 配合 kebiao.org 备课
 
-教材下载好了，下一步是备课。[**kebiao.org**](https://www.kebiao.org) 用的就是这套教材，打开一本书就能看到：
+[kebiao.org](https://www.kebiao.org) 用的就是这套教材。打开一本书，你会看到：
 
-- **每一课教哪几条课标**：AI 逐课读了教材原文，对照本年级课标的全部要点，标出这一课「主要在教」和「也涉及」的要点，每条都附教材原话和页码。整本的对应表可以下载成 Word。目前是机器判断，还在人工核验中。
-- **用这本书备课**：从书里的某一课开始，AI 按课标帮你起草教案。
-- **在线看原书**：不用下载，打开就能读。
+- **每一课在教哪几条课标**：AI 逐课读了课文，对着这个年级的课标要点，标出这一课「主要在教」和「也涉及」的，每条都附上课文原话和页码，整本还能导出成 Word。这一步是机器做的，人工核对还在进行，发现不对的地方欢迎告诉我。
+- **从某一课开始备课**：AI 照着课标，帮你起一份教案草稿。
+- **在线看原书**：懒得下载，就直接在网页上翻。
 
 [![kebiao.org 上的一本书：左边是每一课，右边是它教的课标要点](docs/kebiao-book-page.png)](https://www.kebiao.org/textbooks/ed_006d5ed61c055eb63857)
 
-<sub>上图：kebiao.org 上的人教版数学七年级上册。金线连着这一课「主要在教」的课标要点，虚线是「也涉及」的。</sub>
+<sub>上图是 kebiao.org 上的人教版数学七年级上册。金线连着这一课主要在教的课标要点，虚线是也涉及的。</sub>
 
-本库 143 本书在 kebiao.org 上都有自己的页面，[详细目录](#详细目录)里每本书旁边的「课标对应」链接可以直达。
+这里有 143 本书在 kebiao.org 上有自己的页面，在[详细目录](#详细目录)里点「课标对应」就能过去。
 
 ## 怎么下载
 
-- **单本**：在[快速找书](#快速找书)里点册名，进入文件页后点右上角的下载按钮。
-- **超过 95 MB 的 10 本**：链接直接下载整本 PDF（存放在 [Release](https://github.com/NBrangerF/China-Textbook-New/releases/tag/big-files)）。仓库里同时存有分卷（`.pdf.part1`、`.pdf.part2`……），克隆仓库后运行 `python3 scripts/merge_parts.py` 就能合并并校验。也可以手动合并：
+- **下一本**：在上面点册名，进去以后点右上角的下载按钮。
+- **超过 95 MB 的 10 本**：GitHub 不收超过 100 MB 的文件，所以这几本在仓库里拆成了几段（`.pdf.part1`、`.pdf.part2`……）。不过上面的链接下载的是放在 [Release](https://github.com/NBrangerF/China-Textbook-New/releases/tag/big-files) 里的整本，不用自己拼。如果克隆了整个仓库，运行 `python3 scripts/merge_parts.py` 就能拼好，顺便校验。想手动拼也行：
   - macOS / Linux：`cat 书名.pdf.part* > 书名.pdf`
   - Windows：`copy /b 书名.pdf.part1+书名.pdf.part2+书名.pdf.part3 书名.pdf`
-- **只要某几个学科**，不必下载整个仓库：
+- **只要某几科**，不用把整个仓库拉下来：
 
   ```bash
   git clone --filter=blob:none --sparse https://github.com/NBrangerF/China-Textbook-New.git
@@ -85,24 +87,24 @@
   git sparse-checkout set 小学/数学 初中/数学
   ```
 
-- **整个仓库**：`git clone https://github.com/NBrangerF/China-Textbook-New.git`，约 5.4 GB。
+- **全都要**：`git clone https://github.com/NBrangerF/China-Textbook-New.git`。大约 5.4 GB，网慢的话，建议只拿要用的学科。
 
-## 和 ChinaTextbook 的区别
+## 和 ChinaTextbook 有什么不同
 
-[TapXWorld/ChinaTextbook](https://github.com/TapXWorld/ChinaTextbook) 帮了很多人，但义务教育部分很久没有更新：小学语文、数学停在 2024 年 6 月，初中语文、数学停在 2023 年 3 月。2024 年秋季起各年级陆续换用新教材，那里大多还是旧印次。
+[TapXWorld/ChinaTextbook](https://github.com/TapXWorld/ChinaTextbook) 帮过很多人，kebiao 早先的教材也有不少来自那里。只是义务教育这部分很久没更新了：小学语文、数学停在 2024 年 6 月，初中语文、数学停在 2023 年 3 月，大多还是旧印次。
 
-| | ChinaTextbook | 本库 |
-|---|---|---|
-| 版本 | 旧印次，未标注是否为修订版 | 2022 课标修订版，每本标明 ✅ / ⏳ |
-| 来源 | 未逐本注明 | 124 本取自国家平台，与平台记录的 MD5 逐字节一致，并附平台原页链接；其余 23 本（平台暂无新版，或平台不提供）沿用 ChinaTextbook 的现行版并注明 |
-| 校验 | 无 | `SHA256SUMS.txt` 和 `catalog.json` 记录每本的 SHA-256、页数、大小 |
-| 大文件 | 超过 50 MB 切成 35 MB 的碎片，要另外下载合并程序 | 只拆超过 95 MB 的 10 本，链接直接下载整本 |
-| 更新 | 靠人工 | `scripts/check_updates.py` 对照平台清单，列出平台已上线新版的书 |
-| 备课 | — | 每本书链到 kebiao.org，看每一课对应的课标要点 |
+这个仓库只管义务教育这一段，把它换成最新版，另外多做了几件事：
+
+- 每本都标明是修订版（✅）还是现行版（⏳）。
+- 124 本直接取自国家平台，和平台记录的 MD5 一致，附平台原页链接。另外 23 本平台还没有新版，或者平台不提供，沿用 ChinaTextbook 的现行版，也都标了出来。
+- 每本的 SHA-256、页数、大小都记在 `SHA256SUMS.txt` 和 `catalog.json` 里。
+- 只有超过 95 MB 的 10 本才拆分，点链接下的还是整本，不用另装合并程序。
+- 平台一出新版，`scripts/check_updates.py` 就能查出该换哪几本。
+- 每本书都链到 kebiao.org，能看到每一课对应的课标。
 
 ## 详细目录
 
-每个学科先收一套版本。✅ 为 2022 课标修订版，⏳ 为现行版。「课标对应」打开这本书在 kebiao.org 上的页面，「平台原页」打开国家中小学智慧教育平台上的原页。
+每科先收了一个版本。想要别的版本，[提个 Issue](https://github.com/NBrangerF/China-Textbook-New/issues) 告诉我。✅ 是修订版，⏳ 是现行版。「课标对应」打开这本书在 kebiao.org 上的页面，「平台原页」打开它在国家中小学智慧教育平台上的原页。
 
 ### 小学
 
@@ -337,35 +339,35 @@
 
 ## 校验文件
 
-`SHA256SUMS.txt` 列出每本整本 PDF 的 SHA-256（拆分的书要先合并）：
+下载完想确认文件完整、没被改过，可以用 `SHA256SUMS.txt` 核对（拆分的书要先拼好）：
 
 ```bash
 shasum -a 256 -c SHA256SUMS.txt                   # macOS
-sha256sum -c --ignore-missing SHA256SUMS.txt      # Linux，只校验已下载的
+sha256sum -c --ignore-missing SHA256SUMS.txt      # Linux，只核对已经下载的
 ```
 
-`catalog.json` 是机器可读的完整目录：学段、学科、年级、册次、版本、修订状态、页数、字节数、SHA-256、平台 MD5、平台原页和 kebiao.org 链接；拆分的书另有分卷列表和整本下载地址。
+`catalog.json` 是给程序读的完整目录：学段、学科、年级、册次、版本、是不是修订版、页数、字节数、SHA-256、平台 MD5、平台原页和 kebiao.org 链接都在里面。拆分的书还列了每一段，以及整本的下载地址。
 
 ## 更新
 
-国家平台上线新修订的教材后，本库会替换对应的书，旧版留在 Git 历史里。维护者可以运行：
+国家平台出了新修订的教材，我会把对应的书换掉，旧版留在 Git 历史里。想自己查，可以运行：
 
 ```bash
 python3 scripts/check_updates.py
 ```
 
-它读取平台公开的教材清单，列出两种情况：⏳ 的书平台已有同一出版社的修订版；平台在本库快照之后又更新过某本书的文件。
+它会对照平台公开的教材清单，告诉你两件事：带 ⏳ 的书，平台上是不是已经有同一出版社的修订版；平台在这次整理之后，有没有又更新过哪本书。
 
 ## 一起完善
 
-- 发现错版、缺页、链接打不开，或者想要其他版本（北师大、苏教、沪教、青岛……）：请[提 Issue](https://github.com/NBrangerF/China-Textbook-New/issues)。
-- 觉得有用，点右上角的 ⭐ Star，让更多老师和家长看到。
+- 发现错版、缺页、链接打不开，或者想要北师大、苏教、沪教、青岛这些版本，[提个 Issue](https://github.com/NBrangerF/China-Textbook-New/issues) 告诉我。
+- 觉得有用，点个 ⭐ Star，能让更多老师和家长找到这里。
 
 ## 来源与版权
 
-- 教材著作权归各出版社及编写者所有。本库只做整理，方便教师、学生和家长学习、备课；文件与国家中小学智慧教育平台免费提供的版本一致。请勿用于商业用途。
-- 权利人如有异议，请通过 [Issue](https://github.com/NBrangerF/China-Textbook-New/issues) 联系，我们会尽快处理。
+- 教材的著作权属于各出版社和编写者。我做的只是把国家中小学智慧教育平台免费提供的文件整理到一起，方便老师、学生和家长学习、备课。请不要拿去商用。
+- 如果你是权利人，觉得哪本书不该放在这里，[开个 Issue](https://github.com/NBrangerF/China-Textbook-New/issues) 告诉我，我会尽快处理。
 
 ## English
 
-**China Textbook New** collects the newest editions of China's compulsory-education textbooks (grades 1–9, primary and junior secondary): 147 PDFs, 115 of them revised for the 2022 national curriculum standards. Every file comes from the official [National Smart Education Platform](https://basic.smartedu.cn/tchMaterial) and is checked against the platform's record; each book is marked as revised (✅) or still the current printing (⏳). The companion site [kebiao.org](https://www.kebiao.org) maps every lesson in these books to the points of the 2022 curriculum standards it teaches, and helps teachers draft lesson plans from them.
+Since autumn 2024, China's compulsory-education textbooks (grades 1–9) have been switching to new editions revised for the 2022 curriculum standards, but most PDFs you can find online are still old printings. I build [kebiao.org](https://www.kebiao.org), a site that helps teachers look up curriculum standards, and had to collect the new editions anyway, so here they are: 147 PDFs, 115 of them already revised. 124 of them come straight from the official [National Smart Education Platform](https://basic.smartedu.cn/tchMaterial), the rest say where they came from, and each book says whether it's revised (✅) or still the current printing (⏳). On kebiao.org, every lesson in these books is mapped to the curriculum points it teaches.
