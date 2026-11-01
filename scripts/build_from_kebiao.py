@@ -6,19 +6,20 @@ Usage:
 
 Copies each book into 学段/学科/版本/, splits files over SPLIT_AT bytes into parts
 (the whole file goes to <release_dir> for the GitHub Release), and writes
-catalog.json, SHA256SUMS.txt, .gitignore and the README tables.
+catalog.json, SHA256SUMS.txt, .gitignore and README.md.
 """
 import hashlib
 import json
-import os
 import shutil
 import sys
 import unicodedata
+import urllib.request
 from pathlib import Path
 from urllib.parse import quote
 
 REPO = Path(__file__).resolve().parent.parent
 GITHUB = 'https://github.com/NBrangerF/China-Textbook-New'
+KEBIAO = 'https://www.kebiao.org'
 RELEASE_TAG = 'big-files'
 SPLIT_AT = 95_000_000          # GitHub rejects files over 100 MiB
 PART_SIZE = 90 * 1024 * 1024
@@ -26,14 +27,21 @@ CONTENT_DIRS = ['小学', '初中']
 
 STAGES = {'primary': '小学', 'junior': '初中'}
 GRADES = '一二三四五六七八九'
+SUBJECT_ORDER = ['语文', '数学', '英语', '道德与法治', '科学', '历史', '地理', '地理图册',
+                 '物理', '化学', '生物学', '体育与健康', '音乐', '美术']
 VOLUME_ORDER = {'上册': 0, '下册': 1, '全一册': 2}
 VOLUME_SLUG = {'上册': '1', '下册': '2', '全一册': '0'}
+VOLUME_SHORT = {'上册': '上', '下册': '下', '全一册': '全一册'}
 STATUS = {
     'new': '2022 课标修订版',
     'current': '现行版（平台尚未发布修订版）',
     'atlas': '现行版（配套图册，平台不提供）',
 }
 MARK = {'new': '✅', 'current': '⏳', 'atlas': '⏳'}
+
+
+def nfc(s):
+    return unicodedata.normalize('NFC', str(s))
 
 
 def sha256_of(path):
@@ -56,7 +64,19 @@ def source_of(row):
     return 'TapXWorld/ChinaTextbook（平台尚无新版时沿用）'
 
 
-def load_books(manifest):
+def kebiao_editions():
+    """Edition ids that have a book page on kebiao.org right now."""
+    ids, offset = set(), 0
+    while True:
+        with urllib.request.urlopen(f'{KEBIAO}/api/v1/textbooks?limit=200&offset={offset}', timeout=60) as r:
+            body = json.load(r)
+        ids.update(item['edition_id'] for item in body['data'])
+        offset += len(body['data'])
+        if not body['data'] or offset >= body['meta']['total']:
+            return ids
+
+
+def load_books(manifest, live):
     books = []
     for line in open(manifest, encoding='utf-8'):
         row = json.loads(line)
@@ -80,39 +100,48 @@ def load_books(manifest):
             'sha256': row['sha256'],
             'platform_md5': row.get('source_md5'),
             'platform_url': row.get('source_url'),
+            'kebiao_url': f"{KEBIAO}/textbooks/{row['edition_id']}" if row['edition_id'] in live else None,
             'source': source_of(row),
             '_status_key': status_of(row),
             '_object': row['object_path'],
             '_asset': f"{row['stage']}-{row['subject_slug']}-g{row['grade']}-{VOLUME_SLUG[row['volume']]}.pdf",
         })
-    books.sort(key=lambda b: (b['stage'] != '小学', b['subject'], b['grade'], VOLUME_ORDER[b['volume']]))
+    rank = {s: i for i, s in enumerate(SUBJECT_ORDER)}
+    books.sort(key=lambda b: (b['stage'] != '小学', rank.get(b['subject'], len(rank)), b['subject'],
+                              b['grade'], VOLUME_ORDER[b['volume']]))
     return books
 
 
-def place(book, library_root, release_dir):
-    """Write the book (or its parts) into the repo; return the repo files it owns."""
+def place(book, library_root, release_dir, verified):
+    """Write the book (or its parts) into the repo; return the repo files it owns.
+
+    `verified` maps path -> sha256 from the previous SHA256SUMS.txt, which is only
+    written after every file was checked, so matching sizes there skip re-hashing.
+    """
     src = Path(library_root) / book['_object']
     dest = REPO / book['path']
     dest.parent.mkdir(parents=True, exist_ok=True)
+    known = verified.get(nfc(book['path'])) == book['sha256']
+
     if book['bytes'] <= SPLIT_AT:
-        if not (dest.exists() and dest.stat().st_size == book['bytes'] and sha256_of(dest) == book['sha256']):
+        if not (known and dest.exists() and dest.stat().st_size == book['bytes']):
             shutil.copyfile(src, dest)
-        if sha256_of(dest) != book['sha256']:
-            sys.exit(f'checksum mismatch after copy: {dest}')
+            if sha256_of(dest) != book['sha256']:
+                sys.exit(f'checksum mismatch after copy: {dest}')
         return [dest]
 
     whole = Path(release_dir) / book['_asset']
-    if not (whole.exists() and whole.stat().st_size == book['bytes']):
+    count = -(-book['bytes'] // PART_SIZE)
+    parts = [dest.with_name(f'{dest.name}.part{i}') for i in range(1, count + 1)]
+    sizes_ok = (whole.exists() and whole.stat().st_size == book['bytes']
+                and all(p.exists() for p in parts) and sum(p.stat().st_size for p in parts) == book['bytes'])
+    if not (known and sizes_ok):
         shutil.copyfile(src, whole)
-    if sha256_of(whole) != book['sha256']:
-        sys.exit(f'checksum mismatch after copy: {whole}')
-    parts = []
-    with open(whole, 'rb') as f:
-        for i, chunk in enumerate(iter(lambda: f.read(PART_SIZE), b''), start=1):
-            part = dest.with_name(f'{dest.name}.part{i}')
-            if not (part.exists() and part.stat().st_size == len(chunk)):
-                part.write_bytes(chunk)
-            parts.append(part)
+        if sha256_of(whole) != book['sha256']:
+            sys.exit(f'checksum mismatch after copy: {whole}')
+        with open(whole, 'rb') as f:
+            for part in parts:
+                part.write_bytes(f.read(PART_SIZE))
     book['parts'] = [str(p.relative_to(REPO)) for p in parts]
     book['download_url'] = f"{GITHUB}/releases/download/{RELEASE_TAG}/{book['_asset']}"
     book['release_asset'] = book['_asset']
@@ -123,32 +152,73 @@ def link(path):
     return quote(path)
 
 
-def cell(book, main_edition):
-    mb = book['bytes'] / 1e6
+def badge(label, message, color):
+    def esc(s):
+        return quote(str(s).replace('-', '--').replace('_', '__').replace(' ', '_'))
+    return f'https://img.shields.io/badge/{esc(label)}-{esc(message)}-{color}'
+
+
+def subjects_of(books, stage):
+    out = []
+    for b in books:
+        if b['stage'] == stage and b['subject'] not in out:
+            out.append(b['subject'])
+    return out
+
+
+def main_edition(group):
+    editions = [b['edition'] for b in group]
+    return max(dict.fromkeys(editions), key=editions.count)
+
+
+def overview(books):
+    """学科 × 年级 grid: one screen to find any book."""
+    out = []
+    for stage, grades in (('小学', range(1, 7)), ('初中', range(7, 10))):
+        out.append(f'**{stage}**\n')
+        out.append('| 学科 | ' + ' | '.join(f'{GRADES[g - 1]}年级' for g in grades) + ' |')
+        out.append('|---|' + '---|' * len(grades))
+        for subject in subjects_of(books, stage):
+            group = [b for b in books if b['stage'] == stage and b['subject'] == subject]
+            row = [f"[{subject}](#{quote(stage + subject)})"]
+            for g in grades:
+                links = []
+                for b in sorted((b for b in group if b['grade'] == g), key=lambda b: VOLUME_ORDER[b['volume']]):
+                    href = b.get('download_url') or link(b['path'])
+                    mark = '' if b['_status_key'] == 'new' else '⏳'
+                    links.append(f"[{VOLUME_SHORT[b['volume']]}]({href}){mark}")
+                row.append(' · '.join(links) or '')
+            out.append('| ' + ' | '.join(row) + ' |')
+        out.append('')
+    return '\n'.join(out)
+
+
+def cell(book, main):
     href = book.get('download_url') or link(book['path'])
-    text = f"{MARK[book['_status_key']]} [{book['volume']}]({href}) · {book['pages']} 页 · {mb:.0f} MB"
-    if book['edition'] != main_edition:
+    text = f"{MARK[book['_status_key']]} [{book['volume']}]({href}) · {book['pages']} 页 · {book['bytes'] / 1e6:.0f} MB"
+    if book['edition'] != main:
         text += f"<br><sub>{book['edition']}</sub>"
+    extra = []
+    if book.get('kebiao_url'):
+        extra.append(f"[课标对应]({book['kebiao_url']})")
     if book.get('platform_url'):
-        text += f" · [平台]({book['platform_url']})"
+        extra.append(f"[平台原页]({book['platform_url']})")
+    if extra:
+        text += '<br>' + ' · '.join(extra)
     return text
 
 
-def tables(books):
+def details(books):
     out = []
     for stage in ['小学', '初中']:
         out.append(f'### {stage}\n')
-        subjects = []
-        for b in books:
-            if b['stage'] == stage and b['subject'] not in subjects:
-                subjects.append(b['subject'])
-        for subject in subjects:
+        for subject in subjects_of(books, stage):
             group = [b for b in books if b['stage'] == stage and b['subject'] == subject]
-            editions = [b['edition'] for b in group]
-            main = max(set(editions), key=editions.count)
+            main = main_edition(group)
             volumes = sorted({b['volume'] for b in group}, key=VOLUME_ORDER.get)
-            folder = f'{stage}/{subject}'
-            out.append(f'#### {subject} · {main}　<sub>[打开文件夹]({link(folder)})</sub>\n')
+            # The anchor overview() links to: a hidden <a name> keeps it stable across headings.
+            out.append(f'<a name="{stage}{subject}"></a>\n')
+            out.append(f'#### {stage}{subject} · {main}　<sub>[打开文件夹]({link(stage + "/" + subject)})</sub>\n')
             out.append('| 年级 | ' + ' | '.join(volumes) + ' |')
             out.append('|---|' + '---|' * len(volumes))
             for grade in sorted({b['grade'] for b in group}):
@@ -161,45 +231,56 @@ def tables(books):
     return '\n'.join(out)
 
 
-def stats(books):
+def write_readme(books, snapshot):
     count = {k: sum(1 for b in books if b['_status_key'] == k) for k in MARK}
-    total_gb = sum(b['bytes'] for b in books) / 1e9
-    return count, total_gb
-
-
-def write_readme(books, snapshot_date):
-    count, total_gb = stats(books)
-    split = [b for b in books if b.get('parts')]
-    template = (REPO / 'scripts' / 'README.template.md').read_text(encoding='utf-8')
-    readme = (template
-              .replace('{{DATE}}', snapshot_date)
-              .replace('{{TOTAL}}', str(len(books)))
-              .replace('{{NEW}}', str(count['new']))
-              .replace('{{CURRENT}}', str(count['current']))
-              .replace('{{ATLAS}}', str(count['atlas']))
-              .replace('{{SIZE_GB}}', f'{total_gb:.1f}')
-              .replace('{{SPLIT_COUNT}}', str(len(split)))
-              .replace('{{PLATFORM}}', str(sum(1 for b in books if b.get('platform_md5'))))
-              .replace('{{LEGACY}}', str(sum(1 for b in books if not b.get('platform_md5'))))
-              .replace('{{TABLES}}', tables(books)))
+    values = {
+        'DATE': snapshot,
+        'TOTAL': len(books),
+        'NEW': count['new'],
+        'CURRENT': count['current'],
+        'ATLAS': count['atlas'],
+        'SIZE_GB': f"{sum(b['bytes'] for b in books) / 1e9:.1f}",
+        'SPLIT_COUNT': sum(1 for b in books if b.get('parts')),
+        'PLATFORM': sum(1 for b in books if b.get('platform_md5')),
+        'LEGACY': sum(1 for b in books if not b.get('platform_md5')),
+        'KEBIAO_COUNT': sum(1 for b in books if b.get('kebiao_url')),
+        'BADGE_TOTAL': badge('教材', f'{len(books)} 本', '2f4f4f'),
+        'BADGE_NEW': badge('2022 课标修订版', f"{count['new']} 本", 'c9a227'),
+        'BADGE_DATE': badge('更新', snapshot, '555555'),
+        'BADGE_KEBIAO': badge('配套网站', 'kebiao.org', '1f2937'),
+        'OVERVIEW': overview(books),
+        'DETAILS': details(books),
+    }
+    readme = (REPO / 'scripts' / 'README.template.md').read_text(encoding='utf-8')
+    for key, value in values.items():
+        readme = readme.replace('{{' + key + '}}', str(value))
+    if '{{' in readme:
+        sys.exit('unfilled placeholder in README template')
     (REPO / 'README.md').write_text(readme, encoding='utf-8')
 
 
 def main():
     manifest, library_root, release_dir = sys.argv[1:4]
     Path(release_dir).mkdir(parents=True, exist_ok=True)
-    books = load_books(manifest)
+    books = load_books(manifest, kebiao_editions())
+
+    verified = {}
+    sums = REPO / 'SHA256SUMS.txt'
+    if sums.exists():
+        for line in sums.read_text(encoding='utf-8').splitlines():
+            digest, path = line.split('  ', 1)
+            verified[nfc(path)] = digest
 
     owned = set()
     for b in books:
-        owned.update(place(b, library_root, release_dir))
+        owned.update(place(b, library_root, release_dir, verified))
 
     # Remove books that left the library (e.g. replaced by a new printing).
     # Compare NFC forms: the drive may hand names back decomposed.
-    keep = {unicodedata.normalize('NFC', str(p)) for p in owned}
+    keep = {nfc(p) for p in owned}
     for d in CONTENT_DIRS:
         for p in (REPO / d).rglob('*'):
-            if p.is_file() and not p.name.startswith('._') and unicodedata.normalize('NFC', str(p)) not in keep:
+            if p.is_file() and not p.name.startswith('._') and nfc(p) not in keep:
                 print('removing', p.relative_to(REPO))
                 p.unlink()
 
@@ -208,15 +289,14 @@ def main():
     (REPO / 'catalog.json').write_text(
         json.dumps({'snapshot_date': snapshot, 'books': public}, ensure_ascii=False, indent=1) + '\n',
         encoding='utf-8')
-    (REPO / 'SHA256SUMS.txt').write_text(
-        ''.join(f"{b['sha256']}  {b['path']}\n" for b in books), encoding='utf-8')
+    sums.write_text(''.join(f"{b['sha256']}  {b['path']}\n" for b in books), encoding='utf-8')
     ignore = ['._*', '.DS_Store', '', '# Whole files rebuilt locally from parts (scripts/merge_parts.py)']
     ignore += ['/' + b['path'] for b in books if b.get('parts')]
     (REPO / '.gitignore').write_text('\n'.join(ignore) + '\n', encoding='utf-8')
     write_readme(books, snapshot)
 
-    count, total_gb = stats(books)
-    print(f'{len(books)} books, {total_gb:.2f} GB; {count}; split {sum(1 for b in books if b.get("parts"))}')
+    print(f"{len(books)} books; kebiao pages {sum(1 for b in books if b.get('kebiao_url'))}; "
+          f"split {sum(1 for b in books if b.get('parts'))}")
 
 
 if __name__ == '__main__':
